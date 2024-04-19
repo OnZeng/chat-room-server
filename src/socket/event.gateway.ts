@@ -18,7 +18,7 @@ export class EventGateway {
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log(`Client connected: ${client.id}`);
 
-    client.emit('connection', this.list);
+    this.server.emit('connection', this.list);
   }
 
   // 监听客户端的消息
