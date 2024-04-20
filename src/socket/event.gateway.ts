@@ -16,6 +16,8 @@ export class EventGateway {
   messageLists: any = [];
   // 在线用户
   onlineUsers: any = [];
+  // 日志
+  logs: any = [];
   // 客户端连接时触发
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log(`用户 连接: ${client.id}`);
