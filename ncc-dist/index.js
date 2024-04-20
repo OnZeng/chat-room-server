@@ -77515,28 +77515,54 @@ const websockets_1 = __nested_webpack_require_1684__(5);
 const socket_io_1 = __nested_webpack_require_1684__(6);
 let EventGateway = class EventGateway {
     constructor() {
+        this.historyCount = 0;
         this.messageLists = [];
         this.onlineUsers = [];
+        this.logs = [];
+        this.i = 0;
     }
     handleConnection(client) {
         console.log(`用户 连接: ${client.id}`);
         this.server.emit('connection', {
             messageLists: this.messageLists,
             onlineUsers: this.onlineUsers,
+            logs: this.logs,
+            historyCount: this.historyCount,
         });
     }
     handleDisconnect(client) {
-        this.onlineUsers = this.onlineUsers.filter((item) => item.id !== client.id);
+        this.onlineUsers = this.onlineUsers.filter((item) => {
+            this.logs.push(`${new Date().toLocaleString()} ${item.name} 离开聊天室`);
+            return item.id !== client.id;
+        });
         this.server.emit('onlineUsers', this.onlineUsers);
+        this.server.emit('logs', this.logs);
+        this.server.emit('historyCount', this.historyCount);
     }
     handleMessage(body) {
+        if (this.messageLists.length > 200) {
+            this.i += 1;
+            this.messageLists = [];
+            this.logs.push(`${new Date().toLocaleString()} 聊天记录已清空${this.i}次`);
+        }
+        this.onlineUsers.map((item) => {
+            if (item.id === body.id) {
+                this.logs.push(`${new Date().toLocaleString()} ${item.name} 发送了一条消息`);
+            }
+        });
         this.messageLists.push(body);
         this.server.emit('newMessage', this.messageLists);
         this.server.emit('onlineUsers', this.onlineUsers);
+        this.server.emit('logs', this.logs);
+        this.server.emit('historyCount', this.historyCount);
     }
     handleMessage2(body) {
         this.onlineUsers.push(body);
+        this.logs.push(`${new Date().toLocaleString()} ${body.name} 加入聊天室`);
+        this.historyCount += 1;
         this.server.emit('onlineUsers', this.onlineUsers);
+        this.server.emit('logs', this.logs);
+        this.server.emit('historyCount', this.historyCount);
     }
 };
 exports.EventGateway = EventGateway;
@@ -77608,7 +77634,7 @@ module.exports = __nccwpck_require__(71017);
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_5944__(moduleId) {
+/******/ 	function __nested_webpack_require_7023__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -77622,7 +77648,7 @@ module.exports = __nccwpck_require__(71017);
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_5944__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_7023__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -77635,8 +77661,8 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nested_webpack_require_5944__(1);
-const app_module_1 = __nested_webpack_require_5944__(2);
+const core_1 = __nested_webpack_require_7023__(1);
+const app_module_1 = __nested_webpack_require_7023__(2);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
     await app.listen(5000);
