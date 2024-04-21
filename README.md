@@ -4,6 +4,8 @@
 
 本项目是一个简单的聊天室服务端，使用 Nest.js 编写，基于 socket.io 实现。
 
+预览地址：[http://room.startea.top/](http://room.startea.top/)
+
 ### 安装
 
 ```
