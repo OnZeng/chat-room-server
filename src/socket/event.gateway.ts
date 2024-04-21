@@ -6,6 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { MessageDto } from './dto';
 
 @WebSocketGateway({
   cors: true,
@@ -19,7 +20,7 @@ export class EventGateway {
   // 在线用户
   onlineUsers: any = [];
   // 日志
-  logs: any = [];
+  logs: string[] = [];
   // 记录
   i: number = 0;
   /**
@@ -59,7 +60,7 @@ export class EventGateway {
    * @description 监听客户端的消息事件
    */
   @SubscribeMessage('newMessage')
-  handleMessage(@MessageBody() body: any) {
+  handleMessage(@MessageBody() body: MessageDto) {
     if (this.messageLists.length > 200) {
       this.i += 1;
       this.messageLists = [];
