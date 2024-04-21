@@ -77532,7 +77532,7 @@ let EventGateway = class EventGateway {
     }
     handleDisconnect(client) {
         this.onlineUsers = this.onlineUsers.filter((item) => {
-            this.logs.push(`${new Date().toLocaleString()} ${item.name} 离开聊天室`);
+            this.logs.push(`${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${item.name} 离开聊天室`);
             return item.id !== client.id;
         });
         this.server.emit('onlineUsers', this.onlineUsers);
@@ -77543,11 +77543,11 @@ let EventGateway = class EventGateway {
         if (this.messageLists.length > 200) {
             this.i += 1;
             this.messageLists = [];
-            this.logs.push(`${new Date().toLocaleString()} 聊天记录已清空${this.i}次`);
+            this.logs.push(`${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} 聊天记录已清空${this.i}次`);
         }
         this.onlineUsers.map((item) => {
             if (item.id === body.id) {
-                this.logs.push(`${new Date().toLocaleString()} ${item.name} 发送了一条消息`);
+                this.logs.push(`${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${item.name} 发送了一条消息`);
             }
         });
         this.messageLists.push(body);
@@ -77558,7 +77558,7 @@ let EventGateway = class EventGateway {
     }
     handleMessage2(body) {
         this.onlineUsers.push(body);
-        this.logs.push(`${new Date().toLocaleString()} ${body.name} 加入聊天室`);
+        this.logs.push(`${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${body.name} 加入聊天室`);
         this.historyCount += 1;
         this.server.emit('onlineUsers', this.onlineUsers);
         this.server.emit('logs', this.logs);
@@ -77634,7 +77634,7 @@ module.exports = __nccwpck_require__(71017);
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_7023__(moduleId) {
+/******/ 	function __nested_webpack_require_7175__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -77648,7 +77648,7 @@ module.exports = __nccwpck_require__(71017);
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_7023__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_7175__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -77661,8 +77661,8 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nested_webpack_require_7023__(1);
-const app_module_1 = __nested_webpack_require_7023__(2);
+const core_1 = __nested_webpack_require_7175__(1);
+const app_module_1 = __nested_webpack_require_7175__(2);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
     await app.listen(5000);

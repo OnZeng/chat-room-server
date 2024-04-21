@@ -43,7 +43,9 @@ export class EventGateway {
   handleDisconnect(@ConnectedSocket() client: Socket) {
     // 移除在线用户
     this.onlineUsers = this.onlineUsers.filter((item: any) => {
-      this.logs.push(`${new Date().toLocaleString()} ${item.name} 离开聊天室`);
+      this.logs.push(
+        `${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${item.name} 离开聊天室`,
+      );
       return item.id !== client.id;
     });
 
@@ -62,13 +64,13 @@ export class EventGateway {
       this.i += 1;
       this.messageLists = [];
       this.logs.push(
-        `${new Date().toLocaleString()} 聊天记录已清空${this.i}次`,
+        `${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} 聊天记录已清空${this.i}次`,
       );
     }
     this.onlineUsers.map((item: any) => {
       if (item.id === body.id) {
         this.logs.push(
-          `${new Date().toLocaleString()} ${item.name} 发送了一条消息`,
+          `${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${item.name} 发送了一条消息`,
         );
       }
     });
@@ -87,7 +89,9 @@ export class EventGateway {
   @SubscribeMessage('onlineUsers')
   handleMessage2(@MessageBody() body: any) {
     this.onlineUsers.push(body);
-    this.logs.push(`${new Date().toLocaleString()} ${body.name} 加入聊天室`);
+    this.logs.push(
+      `${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${body.name} 加入聊天室`,
+    );
     this.historyCount += 1;
     // 通知其他用户
     this.server.emit('onlineUsers', this.onlineUsers);
