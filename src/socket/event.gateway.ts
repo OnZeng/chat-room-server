@@ -7,10 +7,14 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { MessageDto, UserDto } from './dto';
+import { UsePipes } from '@nestjs/common';
+import { CustomValidationPipe } from '../common/pipes/validation.pipe';
 
 @WebSocketGateway({
   cors: true,
+  transport: ['websocket'],
 })
+@UsePipes(new CustomValidationPipe())
 export class EventGateway {
   @WebSocketServer() server: Server;
   // 历史人数
@@ -60,7 +64,7 @@ export class EventGateway {
    * @description 监听客户端的消息事件
    */
   @SubscribeMessage('newMessage')
-  handleMessage(@MessageBody() body: MessageDto) {
+  async handleMessage(@MessageBody() body: MessageDto) {
     if (this.messageLists.length > 200) {
       this.i += 1;
       this.messageLists = [];

@@ -1,30 +1,33 @@
-import { IsString, Length, IsEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsUrl } from 'class-validator';
 
 export class MessageDto {
-  @IsEmpty()
   @IsString()
+  @IsNotEmpty()
   id: string;
-  @IsEmpty()
+
   @IsString()
-  @Length(1, 20)
+  @IsNotEmpty()
   name: string;
-  @IsEmpty()
-  @IsString()
+
+  @IsUrl()
+  @IsNotEmpty()
   avatar: string;
-  @IsEmpty()
+
   @IsString()
+  @IsNotEmpty()
   content: string;
 }
 
 export class UserDto {
-  @IsEmpty()
   @IsString()
+  @IsNotEmpty()
   id: string;
-  @IsEmpty()
+
   @IsString()
-  @Length(1, 20)
+  @IsNotEmpty()
   name: string;
-  @IsEmpty()
-  @IsString()
+
+  @IsUrl()
+  @IsNotEmpty()
   avatar: string;
 }
