@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsUrl } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class MessageDto {
   @IsString()
@@ -9,7 +9,7 @@ export class MessageDto {
   @IsNotEmpty()
   name: string;
 
-  @IsUrl()
+  @IsString()
   @IsNotEmpty()
   avatar: string;
 
@@ -27,7 +27,7 @@ export class UserDto {
   @IsNotEmpty()
   name: string;
 
-  @IsUrl()
+  @IsString()
   @IsNotEmpty()
   avatar: string;
 }

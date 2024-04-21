@@ -101776,7 +101776,7 @@ __decorate([
     __metadata("design:type", String)
 ], MessageDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsUrl)(),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], MessageDto.prototype, "avatar", void 0);
@@ -101799,7 +101799,7 @@ __decorate([
     __metadata("design:type", String)
 ], UserDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsUrl)(),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], UserDto.prototype, "avatar", void 0);
@@ -101813,13 +101813,13 @@ module.exports = __nccwpck_require__(53518);
 
 /***/ }),
 /* 9 */
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_9671__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_9677__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CustomValidationPipe = void 0;
-const common_1 = __nested_webpack_require_9671__(3);
-const websockets_1 = __nested_webpack_require_9671__(5);
+const common_1 = __nested_webpack_require_9677__(3);
+const websockets_1 = __nested_webpack_require_9677__(5);
 class CustomValidationPipe extends common_1.ValidationPipe {
     createExceptionFactory() {
         return (validationErrors = []) => {
@@ -101852,7 +101852,7 @@ module.exports = __nccwpck_require__(71017);
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_10731__(moduleId) {
+/******/ 	function __nested_webpack_require_10737__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -101866,7 +101866,7 @@ module.exports = __nccwpck_require__(71017);
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_10731__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_10737__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -101879,8 +101879,8 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nested_webpack_require_10731__(1);
-const app_module_1 = __nested_webpack_require_10731__(2);
+const core_1 = __nested_webpack_require_10737__(1);
+const app_module_1 = __nested_webpack_require_10737__(2);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
     await app.listen(5000);
