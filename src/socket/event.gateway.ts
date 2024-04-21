@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { MessageDto } from './dto';
+import { MessageDto, UserDto } from './dto';
 
 @WebSocketGateway({
   cors: true,
@@ -88,7 +88,7 @@ export class EventGateway {
    * @description 监听客户端的登录事件
    */
   @SubscribeMessage('onlineUsers')
-  handleMessage2(@MessageBody() body: any) {
+  handleMessage2(@MessageBody() body: UserDto) {
     this.onlineUsers.push(body);
     this.logs.push(
       `${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ${body.name} 加入聊天室`,

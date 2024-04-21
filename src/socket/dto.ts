@@ -15,3 +15,16 @@ export class MessageDto {
   @IsString()
   content: string;
 }
+
+export class UserDto {
+  @IsEmpty()
+  @IsString()
+  id: string;
+  @IsEmpty()
+  @IsString()
+  @Length(1, 20)
+  name: string;
+  @IsEmpty()
+  @IsString()
+  avatar: string;
+}
