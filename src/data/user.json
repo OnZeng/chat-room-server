@@ -1,0 +1,53 @@
+[
+  {
+    "uuid": "5832a466-9188-4b12-9949-00fdea37e289",
+    "socketId": "rxkcz42_CCwVwt4yAAAB",
+    "email": "123456@qq.com",
+    "password": "123456",
+    "name": "我的世界",
+    "avatar": "//img2.huashi6.com/images/resource/thumbnail/2024/04/19/52024_22467256264.jpg?imageMogr2/quality/75/interlace/1/thumbnail/223x/gravity/North/crop/223x313/format/jpeg",
+    "state": 1,
+    "online": 1,
+    "device": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0",
+    "regTime": "2025/12/12 16:10:37",
+    "regIp": "::1",
+    "loginTime": "2025/12/12 18:17:24",
+    "ip": "::1",
+    "isInit": 1,
+    "role": 1
+  },
+  {
+    "uuid": "3536cc79-7348-4af5-8d5b-ad63c7a0454f",
+    "socketId": null,
+    "email": "123456789@qq.com",
+    "password": "123456",
+    "name": "www1",
+    "avatar": "//picx.zhimg.com/80/v2-d9f75dbace60cbb9416ec4ab824e1fdd_1440w.webp?source=1def8aca",
+    "state": 1,
+    "online": 0,
+    "device": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0",
+    "regTime": "2025/12/12 16:13:51",
+    "regIp": "::1",
+    "loginTime": "2025/12/12 16:13:53",
+    "ip": "::1",
+    "isInit": 1,
+    "role": 2
+  },
+  {
+    "uuid": "d665f055-9216-4d63-b612-97e05107fb27",
+    "socketId": "kqoWcm3u_STuTNH7AAAF",
+    "email": "1234567@qq.com",
+    "password": "123456",
+    "name": "我",
+    "avatar": "//pic1.zhimg.com/80/v2-3c244d52366a45920a757839d82682eb_1440w.webp?source=1def8aca",
+    "state": 1,
+    "online": 1,
+    "device": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0",
+    "regTime": "2025/12/12 17:52:33",
+    "regIp": "::1",
+    "loginTime": "2025/12/12 18:18:26",
+    "ip": "::1",
+    "isInit": 1,
+    "role": 2
+  }
+]
