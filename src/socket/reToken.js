@@ -2,7 +2,7 @@ import { checkSocketToken, broadcastToRoom } from '../mw/index.js';
 import { isToken, createToken, removePrivacyFields } from '../utils/index.js';
 
 export default function refresh(socket, allDB) {
-  const { userDB, logDB } = allDB;
+  const { userDB, logDB, configDB } = allDB;
   socket.on('reToken', (arg, callback) => {
     const { token } = arg || {};
     isToken(token, 'token不是正确格式', callback);
@@ -67,6 +67,9 @@ export default function refresh(socket, allDB) {
       })}`
     );
     logDB.write();
+    // 连接次数+1
+    configDB.data.connCount += 1;
+    configDB.write();
     // 加入临时房间(权限组)
     socket.join('hall');
     // 转发数据
