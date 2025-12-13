@@ -4,6 +4,15 @@
 
 本项目是一个简单的聊天室服务端，使用 koa 编写，基于 socket.io 实现。
 
+### 功能
+
+- 登录
+- 注册
+- 发送消息
+- 接收消息
+- 身份认证
+- 文件数据存储
+
 预览地址：[http://room.startea.top/](http://room.startea.top/)
 
 ### 安装
