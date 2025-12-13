@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "dotenvx --quiet run -- nodemon -e js --quiet src/app.js",
-    "test": "dotenvx --quiet run -- node --quiet src/app.js"
+    "dev:production": "dotenvx --quiet run -- node src/app.js --production"
   },
   "type": "module",
   "dependencies": {
