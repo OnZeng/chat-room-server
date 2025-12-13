@@ -2,7 +2,20 @@
 
 ### 介绍
 
-本项目是一个简单的聊天室服务端，使用 koa 编写，基于 socket.io 实现。
+简易的聊天室服务端，使用 koa 编写，全程 websocket 连接，基于 socket.io 实现。
+
+### 效果图
+
+<table>
+    <tr>
+        <td ><center><img src="./demo/1.png" width="400">图1</center></td>
+        <td ><center><img src="./demo/2.png" width="400">图2</center></td>
+    </tr>
+    <tr>
+        <td ><center><img src="./demo/3.png" width="400">图3</center></td>
+        <td ><center><img src="./demo/4.png" width="400">图4</center></td>
+    </tr>
+</table>
 
 ### 功能
 
@@ -12,8 +25,9 @@
 - 接收消息
 - 身份认证
 - 文件数据存储
+- 更新推送
 
-预览地址：[http://room.startea.top/](http://room.startea.top/)
+预览地址：[http://69.197.140.41:3000/](http://69.197.140.41:3000/)
 
 ### 安装
 
