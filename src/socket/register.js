@@ -1,6 +1,5 @@
 import { randomUUID } from 'crypto';
-import { createToken } from "../utils/jwt.js";
-import { isEmail, isPassword, isLength, isNoSpace } from "../utils/validator.js";
+import { createToken, isEmail, isPassword, isLength, isNoSpace } from "../utils/index.js";
 
 export default function (socket, allDB) {
     const { userDB, logDB } = allDB;

@@ -1,5 +1,5 @@
-import { createToken, removePrivacyFields, isEmail, isPassword, broadcastToHall } from '../utils/index.js';
-import { broadcastToRoom } from '../middlewares/index.js';
+import { createToken, removePrivacyFields, isEmail, isPassword } from '../utils/index.js';
+import { broadcastToRoom } from '../mw/index.js';
 
 export default function login(socket, allDB) {
     const { userDB, logDB } = allDB;
@@ -27,7 +27,7 @@ export default function login(socket, allDB) {
                 message: "账号已停用，请联系管理员",
             });
         }
-        // 账号是否已登录
+        // 账号是否已在线
         if (oneInfo.online === 1) {
             return callback({
                 code: 0,
@@ -38,9 +38,9 @@ export default function login(socket, allDB) {
         }
         // 生成新token
         const newToken = createToken({ uuid: oneInfo.uuid, name: oneInfo.name, avatar: oneInfo.avatar, email: oneInfo.email });
-        if (oneInfo.inInit === 0) {
+        if (oneInfo.isInit === 0) {
             return callback({
-                code: 1,
+                code: 2,
                 type: "success",
                 data: {
                     token: newToken,
@@ -77,7 +77,7 @@ export default function login(socket, allDB) {
         // 记录大厅日志
         logDB.data.push(`${user.uuid} 进入房间 ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`)
         logDB.write();
-        // 加入零时房间(权限组)
+        // 加入临时房间(权限组)
         socket.join('hall');
         // 转发数据
         broadcastToRoom(socket, allDB, 'hall')

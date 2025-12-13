@@ -35,12 +35,15 @@ export async function initJsonDB() {
     const userDB = await JSONFilePreset('./src/data/user.json', [defaultUser])
     const msgDB = await JSONFilePreset('./src/data/msg.json', [])
     const logDB = await JSONFilePreset('./src/data/log.json', [])
-    userDB.read()
-    userDB.write()
-    msgDB.read()
-    msgDB.write()
-    logDB.read()
-    logDB.write()
+    await userDB.read()
+    await userDB.write()
+    await msgDB.read()
+    await msgDB.write()
+    await logDB.read()
+    await logDB.write()
+    // 启动服务端强制下线所有用户
+    userDB.data.forEach(item => item.online = 0)
+    await userDB.write()
     console.log("数据加载完成");
     return {
         userDB,

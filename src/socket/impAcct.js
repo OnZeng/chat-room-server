@@ -1,6 +1,5 @@
-import { checkSocketToken } from "../middlewares/auth.js";
+import { checkSocketToken, broadcastToRoom } from "../mw/index.js";
 import { isToken, isLength, isNoSpace, createToken } from '../utils/index.js'
-import { broadcastToRoom } from '../middlewares/index.js'
 
 
 

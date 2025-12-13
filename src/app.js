@@ -6,7 +6,7 @@ import koaHelmet from "koa-helmet";
 import http from 'http';
 import { Server } from 'socket.io';
 import { prRouter, puRouter } from "./routes/index.js";
-import { initJsonDB } from "./middlewares/index.js";
+import { initJsonDB } from "./mw/index.js";
 import { bootstrap } from "./socket/index.js";
 
 console.log("----------------------启动中----------------------");
@@ -20,9 +20,7 @@ if (process.env.SOCKET_ENABLED === 'true') {
     const io = new Server(server);
     //初始化数据库
     const allDB = await initJsonDB()
-
     bootstrap(io, allDB);
-
     server.listen(process.env.SOCKET_PORT, () => {
         console.log("websocket服务启动成功，访问地址:http://127.0.0.1:" + process.env.SOCKET_PORT || 3000);
     });

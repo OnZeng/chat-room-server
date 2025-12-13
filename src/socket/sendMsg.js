@@ -1,6 +1,5 @@
-import { checkSocketToken } from '../middlewares/auth.js';
+import { checkSocketToken, broadcastToRoom } from '../mw/index.js';
 import { isLength, isNoSpace, isToken } from '../utils/index.js';
-import { broadcastToRoom } from '../middlewares/index.js';
 
 export default function sendMsg(socket, allDB) {
     const { msgDB, logDB } = allDB;

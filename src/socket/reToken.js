@@ -1,14 +1,32 @@
-import { checkSocketToken } from "../middlewares/auth.js";
+import { checkSocketToken, broadcastToRoom } from "../mw/index.js";
 import { isToken, createToken, removePrivacyFields } from "../utils/index.js";
-import { broadcastToRoom } from "../middlewares/index.js";
 
 export default function refresh(socket, allDB) {
-    const { userDB, msgDB, logDB } = allDB;
+    const { userDB, logDB } = allDB;
     socket.on('reToken', (arg, callback) => {
         const { token } = arg || {}
         isToken(token, 'token不是正确格式', callback);
         // 验证并获取token中的用户信息
         const tokenVal = checkSocketToken(token, callback);
+        // 当前登录用户信息
+        const user = removePrivacyFields(userDB.data.find(item => item.uuid === tokenVal.uuid));
+        if (!user.uuid) {
+            return callback({
+                code: 0,
+                type: "error",
+                data: {},
+                message: "认证已过期，请重新登录",
+            })
+        }
+        // 账号是否在线
+        if (user.online === 1) {
+            return callback({
+                code: 0,
+                type: "error",
+                data: {},
+                message: "账号已在其他设备登录",
+            })
+        }
         // 更新用户信息
         userDB.data.forEach(item => {
             if (item.uuid === tokenVal.uuid) {
@@ -20,12 +38,6 @@ export default function refresh(socket, allDB) {
             }
         })
         userDB.write();
-        // 当前登录用户信息
-        const user = removePrivacyFields(userDB.data.find(item => item.uuid === tokenVal.uuid));
-        // 查找当前在线用户
-        const onlineUsers = userDB.data.filter(item => item.online === 1).map(item => removePrivacyFields(item));;
-        // 大厅聊天记录
-        const msgList = msgDB.data.map(item => item);
         // 生成新token
         const newToken = createToken({ uuid: user.uuid, email: user.email });
         // 记录大厅日志

@@ -1,5 +1,5 @@
 import router from "koa-router";
-import { checkToken } from "../middlewares/index.js";
+import { checkToken } from "../mw/index.js";
 
 /**
  * @description 私有路由(无需token校验)
