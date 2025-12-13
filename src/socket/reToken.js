@@ -8,6 +8,9 @@ export default function refresh(socket, allDB) {
         isToken(token, 'token不是正确格式', callback);
         // 验证并获取token中的用户信息
         const tokenVal = checkSocketToken(token, callback);
+        if (!tokenVal.auto) {
+            return;
+        }
         // 当前登录用户信息
         const user = removePrivacyFields(userDB.data.find(item => item.uuid === tokenVal.uuid));
         if (!user.uuid) {
@@ -39,7 +42,7 @@ export default function refresh(socket, allDB) {
         })
         userDB.write();
         // 生成新token
-        const newToken = createToken({ uuid: user.uuid, email: user.email });
+        const newToken = createToken({ uuid: user.uuid, name: user.name, avatar: user.avatar, email: user.email });
         // 记录大厅日志
         logDB.data.push(`${user.uuid} 重新连接 ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`)
         logDB.write();

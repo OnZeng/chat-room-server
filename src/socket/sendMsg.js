@@ -11,7 +11,9 @@ export default function sendMsg(socket, allDB) {
         isToken(token, "token格式错误", callback);
         // 验证并获取token中的用户信息
         const tokenVal = checkSocketToken(token, callback);
-
+        if (!tokenVal.auto) {
+            return;
+        }
         // 发送消息
         msgDB.data.push({
             uuid: tokenVal.uuid,

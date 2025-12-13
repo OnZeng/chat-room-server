@@ -36,16 +36,19 @@ export function checkSocketToken(token, callback) {
         const user = verifyToken(token);
         return {
             ...user,
-            // 认证成功
             auto: true
         }
     } catch (error) {
-        console.log('token解密失败:' + error.message);
-        return callback({
+        // console.log('token解密失败:' + error.message);
+        callback({
             code: 0,
             type: "error",
             data: {},
             message: "身份认证失败",
         });
+        return {
+            user: null,
+            auto: false
+        };
     }
 }

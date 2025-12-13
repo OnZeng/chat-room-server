@@ -15,6 +15,9 @@ export default function (socket, allDB) {
         isLength(avatar, 1, 255, "头像地址长度必须在1到255之间", callback);
         // 验证并获取token中的用户信息
         const tokenVal = checkSocketToken(token, callback);
+        if (!tokenVal.auto) {
+            return;
+        }
         // 更新用户信息
         userDB.data.forEach(item => {
             if (item.uuid === tokenVal.uuid) {
