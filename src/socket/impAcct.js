@@ -6,7 +6,7 @@ export default function (socket, allDB) {
   socket.on('init', (arg, callback) => {
     const { name, avatar, token } = arg || {};
 
-    isToken(token, 'token格式错误', callback);
+    isToken(token, '不是一个有效token', callback);
     isNoSpace(name, '昵称不能有空格', callback);
     isLength(name, 1, 6, '昵称需为1-6个文字或字母或数字或下划线', callback);
     isNoSpace(avatar, '头像地址不能有空格', callback);

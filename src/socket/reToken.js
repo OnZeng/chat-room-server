@@ -5,7 +5,7 @@ export default function refresh(socket, allDB) {
   const { userDB, logDB, configDB } = allDB;
   socket.on('reToken', (arg, callback) => {
     const { token } = arg || {};
-    isToken(token, 'token不是正确格式', callback);
+    isToken(token, '不是一个有效token', callback);
     // 验证并获取token中的用户信息
     const tokenVal = checkSocketToken(token, callback);
     if (!tokenVal.auto) {

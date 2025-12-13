@@ -6,9 +6,9 @@ export default function sendMsg(socket, allDB) {
   socket.on('sendMsg', (arg, callback) => {
     const { content, token } = arg || {};
 
+    isToken(token, '不是一个有效token', callback);
     isNoSpace(content, '消息内容不能有空格', callback);
     isLength(content, 1, 100, '消息内容长度必须在1-100之间', callback);
-    isToken(token, 'token格式错误', callback);
     // 验证并获取token中的用户信息
     const tokenVal = checkSocketToken(token, callback);
     if (!tokenVal.auto) {
