@@ -37,11 +37,44 @@ const socketOptions = {
 
 if (process.env.SOCKET_ENABLED === 'true') {
   const app = new koa();
+
+  app.on('error', (err) => {
+    if (err.code === 'ERR_STREAM_PREMATURE_CLOSE' || err.code === 'ECONNRESET') {
+      return;
+    }
+    console.error(err);
+  });
+
+  app.use(async (ctx, next) => {
+    try {
+      await next();
+    } catch (err) {
+      if (err.code === 'ERR_STREAM_PREMATURE_CLOSE' || err.code === 'ECONNRESET') {
+        return;
+      }
+      throw err;
+    }
+  });
+
   app.use(historyApiFallback());
   app.use(koaStatic('dist'));
   // 初始化websocket服务
   console.log('初始化websocket服务');
   const server = http.createServer(app.callback());
+
+  server.on('clientError', (err, socket) => {
+    if (err.code === 'ERR_STREAM_PREMATURE_CLOSE' || err.code === 'ECONNRESET') {
+      return;
+    }
+  });
+
+  process.on('uncaughtException', (err) => {
+    if (err.code === 'ERR_STREAM_PREMATURE_CLOSE') {
+      return;
+    }
+    console.error(err);
+  });
+
   const io = new Server(server, socketOptions);
   // 初始化数据库
   const allDB = await initJsonDB();
