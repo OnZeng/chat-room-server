@@ -11,9 +11,8 @@ export async function initJsonDB() {
     socketId: null, // 会话id
     email: '123456@qq.com', // 邮箱
     password: '123456', // 密码
-    name: 'admin', // 昵称
-    avatar:
-      '//pic1.zhimg.com/80/v2-3c38945eed11ff8180a381cec5cdfe8d_1440w.webp?source=1def8aca', // 头像
+    name: '', // 昵称
+    avatar: '', // 头像
     state: 1, // 账号状态 0：停用 1：正常
     online: 0, // 是否在线 0：否 1：是
     device: '', // 设备类型
@@ -22,7 +21,7 @@ export async function initJsonDB() {
     loginTime: null, // 登录时间
     ip: null, // 登录ip
     isInit: 0, // 是否初始化 0：否 1：是 初始化后不能再初始化
-    role: 1, // 1：管理员 2：普通用户
+    role: 1 // 1：管理员 2：普通用户
   };
   console.log('正在初始化数据库');
   // 判断文件夹是否存在，不存在则创建
@@ -38,7 +37,7 @@ export async function initJsonDB() {
   const logDB = await JSONFilePreset('./src/data/log.json', []);
   const configDB = await JSONFilePreset('./src/data/config.json', {
     // 连接次数
-    connCount: 0,
+    connCount: 0
   });
   await userDB.read();
   await userDB.write();
@@ -49,13 +48,13 @@ export async function initJsonDB() {
   await configDB.read();
   await configDB.write();
   // 启动服务端强制下线所有用户
-  userDB.data.forEach((item) => (item.online = 0));
+  userDB.data.forEach(item => (item.online = 0));
   await userDB.write();
   console.log('数据加载完成');
   return {
     userDB,
     msgDB,
     logDB,
-    configDB,
+    configDB
   };
 }
