@@ -1,21 +1,29 @@
 import { removePrivacyFields } from '../utils/index.js';
-// 向指定房间转发数据
+import { MAX_MSG_COUNT, MAX_LOG_COUNT } from './dbCache.js';
+
+let onlineUsersCache = [];
+let onlineUsersDirty = true;
+
+function buildOnlineUsers(userCache) {
+  if (!onlineUsersDirty) return onlineUsersCache;
+  const onlineUsers = userCache.getOnlineUsers().map(item => removePrivacyFields(item));
+  onlineUsersCache = onlineUsers;
+  onlineUsersDirty = false;
+  return onlineUsersCache;
+}
+
+function invalidateOnlineUsersCache() {
+  onlineUsersDirty = true;
+}
+
 export async function broadcastToRoom(socket, allDB, room) {
-  const { userDB, msgDB, logDB, configDB } = allDB;
-  // 检测账号是否已初始化
-  const user = await userDB.data.find(item => item.socketId === socket.id);
+  const { userDB, userCache, msgCache, logCache, configCache } = allDB;
+  const user = userCache.findBySocketId(socket.id);
   if (user === undefined) {
     return;
   }
   if (!user.name || !user.avatar) {
-    // 更新用户状态为离线
-    userDB.data.forEach(item => {
-      if (item.uuid === user.uuid) {
-        item.socketId = null;
-        item.online = 0;
-      }
-    });
-    userDB.write();
+    userCache.removeSocketId(socket.id);
     socket.emit('init', {
       code: -2,
       type: 'error',
@@ -24,26 +32,53 @@ export async function broadcastToRoom(socket, allDB, room) {
     });
     return;
   }
-  // 查询当前在线用户(删除部分隐私字段)
-  const onlineUsers = userDB.data
-    .filter(item => item.online === 1)
-    .map(item => removePrivacyFields(item));
-  // 大厅聊天记录
-  const msgList = msgDB.data.map(item => item);
-  // 大厅日志
-  const logList = logDB.data.map(item => item);
-  // 大厅连接次数
-  const connCount = configDB.data.connCount;
-  socket.to(room).emit('data', {
+  const onlineUsers = buildOnlineUsers(userCache);
+  const msgList = msgCache.getRecentMessages(MAX_MSG_COUNT);
+  const logList = logCache.getRecentLogs(MAX_LOG_COUNT);
+  const connCount = configCache.getConnCount();
+  const data = {
     onlineUsers,
     msgList,
     logList,
     connCount
-  });
-  socket.emit('data', {
+  };
+  socket.to(room).emit('data', data);
+  socket.emit('data', data);
+}
+
+export function broadcastNewMessage(io, allDB, room, message) {
+  const { userCache, configCache } = allDB;
+  const onlineUsers = buildOnlineUsers(userCache);
+  const connCount = configCache.getConnCount();
+  io.to(room).emit('newMessage', {
+    message,
     onlineUsers,
-    msgList,
+    connCount
+  });
+}
+
+export function broadcastUserStatusChange(io, allDB, room) {
+  const { userCache, configCache, logCache } = allDB;
+  invalidateOnlineUsersCache();
+  const onlineUsers = buildOnlineUsers(userCache);
+  const connCount = configCache.getConnCount();
+  const logList = logCache.getRecentLogs(MAX_LOG_COUNT);
+  io.to(room).emit('userStatus', {
+    onlineUsers,
     logList,
     connCount
   });
 }
+
+export function getInitialData(allDB) {
+  const { userCache, msgCache, logCache, configCache } = allDB;
+  invalidateOnlineUsersCache();
+  return {
+    onlineUsers: buildOnlineUsers(userCache),
+    msgList: msgCache.getRecentMessages(MAX_MSG_COUNT),
+    logList: logCache.getRecentLogs(MAX_LOG_COUNT),
+    connCount: configCache.getConnCount()
+  };
+}
+
+export { invalidateOnlineUsersCache };

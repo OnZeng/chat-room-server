@@ -1,8 +1,8 @@
-import { checkSocketToken, broadcastToRoom } from '../mw/index.js';
-import { isToken, isLength, isNoSpace, createToken } from '../utils/index.js';
+import { checkSocketToken, broadcastUserStatusChange, invalidateOnlineUsersCache } from '../mw/index.js';
+import { isToken, isLength, isNoSpace, createToken, removePrivacyFields } from '../utils/index.js';
 
-export default function (socket, allDB) {
-  const { userDB, logDB, configDB } = allDB;
+export default function (socket, allDB, io) {
+  const { userCache, logCache, configCache } = allDB;
   socket.on('init', (arg, callback) => {
     const { name, avatar, token } = arg || {};
 
@@ -11,54 +11,50 @@ export default function (socket, allDB) {
     isLength(name, 1, 6, '昵称需为1-6个文字或字母或数字或下划线', callback);
     isNoSpace(avatar, '头像地址不能有空格', callback);
     isLength(avatar, 1, 255, '头像地址长度必须在1到255之间', callback);
-    // 验证并获取token中的用户信息
     const tokenVal = checkSocketToken(token, callback);
     if (!tokenVal.auto) {
       return;
     }
-    // 更新用户信息
-    userDB.data.forEach((item) => {
-      if (item.uuid === tokenVal.uuid) {
-        item.socketId = socket.id;
-        item.name = name;
-        item.avatar = avatar;
-        item.online = 1;
-        item.isInit = 1;
-        item.device = socket.handshake.headers['user-agent'];
-        item.loginTime = new Date().toLocaleString('zh-CN', {
-          timeZone: 'Asia/Shanghai',
-        });
-        item.ip = socket.handshake.address;
-      }
+    const user = userCache.findByUuid(tokenVal.uuid);
+    if (!user) {
+      return callback({
+        code: 0,
+        type: 'error',
+        data: {},
+        message: '用户不存在',
+      });
+    }
+    user.socketId = socket.id;
+    user.name = name;
+    user.avatar = avatar;
+    user.online = 1;
+    user.isInit = 1;
+    user.device = socket.handshake.headers['user-agent'];
+    user.loginTime = new Date().toLocaleString('zh-CN', {
+      timeZone: 'Asia/Shanghai',
     });
-    userDB.write();
-    // 当前用户信息
-    const user = userDB.data.find((item) => item.uuid === tokenVal.uuid);
-    // 生成新token
+    user.ip = socket.handshake.address;
+    userCache.updateUser(user);
+    invalidateOnlineUsersCache();
     const newToken = createToken({
       uuid: user.uuid,
       name: user.name,
       avatar: user.avatar,
       email: user.email,
     });
-    logDB.data.push(
+    logCache.addLog(
       `${user.uuid} 进入房间 ${new Date().toLocaleString('zh-CN', {
         timeZone: 'Asia/Shanghai',
       })}`
     );
-    logDB.write();
-    // 连接次数+1
-    configDB.data.connCount += 1;
-    configDB.write();
-    // 加入权限组
+    configCache.incrementConnCount();
     socket.join('hall');
-    // 转发数据
-    broadcastToRoom(socket, allDB, 'hall');
+    broadcastUserStatusChange(io, allDB, 'hall');
     return callback({
       code: 1,
       type: 'success',
       data: {
-        user,
+        user: removePrivacyFields(user),
         token: newToken,
       },
       message: '设置成功',

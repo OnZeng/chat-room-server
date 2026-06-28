@@ -1,26 +1,15 @@
-import { broadcastToRoom } from '../mw/index.js';
+import { broadcastUserStatusChange, invalidateOnlineUsersCache } from '../mw/index.js';
 
-// 断开连接
-export default function disconnect(socket, allDB) {
+export default function disconnect(socket, allDB, io) {
     socket.on('disconnect', () => {
-        const { userDB, logDB } = allDB;
-        const user = userDB.data.find(item => item.socketId === socket.id);
-        // 记录大厅日志
+        const { userCache, logCache } = allDB;
+        const user = userCache.findBySocketId(socket.id);
         if (user) {
-            logDB.data.push(`${user?.uuid} 断开连接 ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`)
-            logDB.write();
+            logCache.addLog(`${user.uuid} 断开连接 ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`);
+            userCache.removeSocketId(socket.id);
+            invalidateOnlineUsersCache();
         }
-        // 更新用户状态为离线
-        userDB.data.forEach(item => {
-            if (item.socketId === socket.id) {
-                item.socketId = null
-                item.online = 0;
-            }
-        })
-        userDB.write()
-        // 离开权限组
         socket.leave('hall');
-        // 转发数据
-        broadcastToRoom(socket, allDB, 'hall')
+        broadcastUserStatusChange(io, allDB, 'hall');
     });
 }

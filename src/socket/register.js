@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { createToken, isEmail, isPassword, isLength, isNoSpace } from "../utils/index.js";
 
 export default function (socket, allDB) {
-    const { userDB, logDB } = allDB;
+    const { userCache, logCache } = allDB;
     socket.on('register', (arg, callback) => {
         const { email, password, cfmPassword } = arg || {};
 
@@ -21,8 +21,7 @@ export default function (socket, allDB) {
                 message: "密码和确认密码不一致",
             });
         }
-        // 校验邮箱是否已存在
-        const userInfo = userDB.data.find(item => item.email === email);
+        const userInfo = userCache.findByEmail(email);
         if (userInfo) {
             return callback({
                 code: 0,
@@ -31,7 +30,6 @@ export default function (socket, allDB) {
                 message: "邮箱已存在",
             });
         }
-        // 注册
         const newUser = {
             uuid: randomUUID(),
             socketId: null,
@@ -49,11 +47,8 @@ export default function (socket, allDB) {
             isInit: 0,
             role: 2,
         }
-        userDB.data.push(newUser);
-        userDB.write();
-        // 记录大厅日志
-        logDB.data.push(`${newUser.uuid} 注册 ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`)
-        logDB.write();
+        userCache.addUser(newUser);
+        logCache.addLog(`${newUser.uuid} 注册 ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`);
         const newToken = createToken({ uuid: newUser.uuid, name: '00000', avatar: '', email: newUser.email });
         return callback({
             code: 1,

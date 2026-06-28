@@ -7,26 +7,29 @@ import sendMsg from './sendMsg.js';
 import disconnect from './disconnect.js';
 import version from './version.js';
 import ping from './ping.js';
+import { getInitialData } from '../mw/index.js';
 
 export function bootstrap(io, allDB) {
   io.on('connection', (socket) => {
-    // 推送更新
     version(socket);
-    // ping检测
     ping(socket, allDB);
-    // 登录
-    login(socket, allDB);
-    // 登出
-    logout(socket, allDB);
-    // 注册
+    login(socket, allDB, io);
+    logout(socket, allDB, io);
     register(socket, allDB);
-    // 完善用户信息并登录
-    accInit(socket, allDB);
-    // 刷新令牌
+    accInit(socket, allDB, io);
     refresh(socket, allDB);
-    // 发送消息
-    sendMsg(socket, allDB);
-    // 断开连接
-    disconnect(socket, allDB);
+    sendMsg(socket, allDB, io);
+    disconnect(socket, allDB, io);
+
+    socket.on('getInitialData', (callback) => {
+      if (typeof callback === 'function') {
+        callback({
+          code: 1,
+          type: 'success',
+          data: getInitialData(allDB),
+          message: '获取成功'
+        });
+      }
+    });
   });
 }
