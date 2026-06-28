@@ -1,8 +1,9 @@
-import { checkSocketToken, broadcastToRoom } from '../mw/index.js';
+import { checkSocketToken, broadcastUserStatusChange, invalidateOnlineUsersCache } from '../mw/index.js';
 import { isToken, createToken, removePrivacyFields } from '../utils/index.js';
 
-export default function refresh(socket, allDB) {
-  const { userDB, logDB, configDB } = allDB;
+// 刷新token并重连
+export default function refresh(socket, allDB, io) {
+  const { userCache, logCache, configCache } = allDB;
   socket.on('reToken', (arg, callback) => {
     const { token } = arg || {};
     isToken(token, '不是一个有效token', callback);
@@ -11,11 +12,9 @@ export default function refresh(socket, allDB) {
     if (!tokenVal.auto) {
       return;
     }
-    // 当前登录用户信息
-    const user = removePrivacyFields(
-      userDB.data.find(item => item.uuid === tokenVal.uuid)
-    );
-    if (!user.uuid) {
+    // 从缓存中查找用户
+    const userInfo = userCache.findByUuid(tokenVal.uuid);
+    if (!userInfo) {
       return callback({
         code: 0,
         type: 'error',
@@ -23,7 +22,7 @@ export default function refresh(socket, allDB) {
         message: '认证已过期，请重新登录'
       });
     }
-    if (user.name === null || user.avatar === null) {
+    if (userInfo.name === null || userInfo.avatar === null) {
       return callback({
         code: -2,
         type: 'error',
@@ -32,7 +31,7 @@ export default function refresh(socket, allDB) {
       });
     }
     // 账号是否在线
-    if (user.online === 1) {
+    if (userInfo.online === 1) {
       return callback({
         code: 0,
         type: 'error',
@@ -41,45 +40,40 @@ export default function refresh(socket, allDB) {
       });
     }
     // 更新用户信息
-    userDB.data.forEach(item => {
-      if (item.uuid === tokenVal.uuid) {
-        item.socketId = socket.id;
-        item.online = 1;
-        item.device = socket.handshake.headers['user-agent'];
-        item.loginTime = new Date().toLocaleString('zh-CN', {
-          timeZone: 'Asia/Shanghai'
-        });
-        item.ip = socket.handshake.address;
-      }
+    userInfo.socketId = socket.id;
+    userInfo.online = 1;
+    userInfo.device = socket.handshake.headers['user-agent'];
+    userInfo.loginTime = new Date().toLocaleString('zh-CN', {
+      timeZone: 'Asia/Shanghai'
     });
-    userDB.write();
+    userInfo.ip = socket.handshake.address;
+    userCache.updateUser(userInfo);
+    invalidateOnlineUsersCache();
     // 生成新token
     const newToken = createToken({
-      uuid: user.uuid,
-      name: user.name,
-      avatar: user.avatar,
-      email: user.email
+      uuid: userInfo.uuid,
+      name: userInfo.name,
+      avatar: userInfo.avatar,
+      email: userInfo.email
     });
     // 记录大厅日志
-    logDB.data.push(
-      `${user.uuid} 重新连接 ${new Date().toLocaleString('zh-CN', {
+    logCache.addLog(
+      `${userInfo.uuid} 重新连接 ${new Date().toLocaleString('zh-CN', {
         timeZone: 'Asia/Shanghai'
       })}`
     );
-    logDB.write();
     // 连接次数+1
-    configDB.data.connCount += 1;
-    configDB.write();
+    configCache.incrementConnCount();
     // 加入临时房间(权限组)
     socket.join('hall');
-    // 转发数据
-    broadcastToRoom(socket, allDB, 'hall');
+    // 转发用户状态变化
+    broadcastUserStatusChange(io, allDB, 'hall');
     // 刷新成功
     return callback({
       code: 1,
       type: 'success',
       data: {
-        user,
+        user: removePrivacyFields(userInfo),
         token: newToken
       },
       message: '刷新成功'

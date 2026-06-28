@@ -12,6 +12,29 @@ import { bootstrap } from './socket/index.js';
 
 console.log('----------------------启动中----------------------');
 
+// Socket.io 性能优化配置
+const socketOptions = {
+  // 允许的传输方式
+  transports: ['websocket', 'polling'],
+  // 心跳间隔（客户端多久发一次ping，默认25s，这里调整为更合理的值）
+  pingInterval: 15000,
+  // 心跳超时时间（服务端多久没收到pong就断开，默认20s）
+  pingTimeout: 10000,
+  // 连接超时时间
+  connectTimeout: 10000,
+  // 启用压缩
+  perMessageDeflate: {
+    threshold: 1024, // 大于1KB才压缩
+  },
+  // 允许的最大HTTP缓冲区大小
+  maxHttpBufferSize: 1e6,
+  // 跨域配置
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+};
+
 if (process.env.SOCKET_ENABLED === 'true') {
   const app = new koa();
   app.use(historyApiFallback());
@@ -19,8 +42,8 @@ if (process.env.SOCKET_ENABLED === 'true') {
   // 初始化websocket服务
   console.log('初始化websocket服务');
   const server = http.createServer(app.callback());
-  const io = new Server(server);
-  //初始化数据库
+  const io = new Server(server, socketOptions);
+  // 初始化数据库
   const allDB = await initJsonDB();
   bootstrap(io, allDB);
   server.listen(process.env.SOCKET_PORT, () => {
@@ -32,7 +55,7 @@ if (process.env.SOCKET_ENABLED === 'true') {
 } else {
   const app = new koa();
   app.use(historyApiFallback());
-  //初始化数据库
+  // 初始化数据库
   app.context.allDB = await initJsonDB();
 
   app.use(
@@ -49,7 +72,6 @@ if (process.env.SOCKET_ENABLED === 'true') {
   app.use(puRouter.routes());
 
   app.listen(process.env.HTTP_PORT || 3000, () => {
-    // console.log(process.env.TOKEN_SECRET);
     console.log(
       'http服务启动成功，访问地址:http://127.0.0.1:' + process.env.HTTP_PORT ||
         3000
