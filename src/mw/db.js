@@ -48,7 +48,7 @@ export async function initJsonDB() {
   await configDB.read();
   await configDB.write();
   // 启动服务端强制下线所有用户
-  userDB.data.forEach(item => (item.online = 0));
+  await userDB.data.forEach(item => (item.online = 0));
   await userDB.write();
   console.log('数据加载完成');
   return {

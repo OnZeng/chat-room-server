@@ -42,14 +42,17 @@ export function isLength(str, min, max, msg, callback) {
 
 // 效验字符串是否有空格
 export function isNoSpace(str, msg, callback) {
-  if (str.includes(' ')) {
+  // 不能只发空格正则表达式
+  const noSpaceRegex = /^\s*$/;
+  if (noSpaceRegex.test(str)) {
     return callback({
       code: 0,
       type: 'error',
       data: {},
-      message: msg || '字符串不能包含空格'
+      message: msg || '不能发送空字符'
     });
   }
+
   return true;
 }
 
