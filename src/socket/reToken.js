@@ -13,22 +13,22 @@ export default function refresh(socket, allDB) {
     }
     // 当前登录用户信息
     const user = removePrivacyFields(
-      userDB.data.find((item) => item.uuid === tokenVal.uuid)
+      userDB.data.find(item => item.uuid === tokenVal.uuid)
     );
     if (!user.uuid) {
       return callback({
         code: 0,
         type: 'error',
         data: {},
-        message: '认证已过期，请重新登录',
+        message: '认证已过期，请重新登录'
       });
     }
     if (user.name === null || user.avatar === null) {
       return callback({
-        code: 0,
+        code: -2,
         type: 'error',
         data: {},
-        message: '账号未完善信息，请重新登录并完善账号信息',
+        message: '账号未完善信息，请重新登录并完善账号信息'
       });
     }
     // 账号是否在线
@@ -37,17 +37,17 @@ export default function refresh(socket, allDB) {
         code: 0,
         type: 'error',
         data: {},
-        message: '账号已在其他设备登录',
+        message: '账号已在其他设备登录'
       });
     }
     // 更新用户信息
-    userDB.data.forEach((item) => {
+    userDB.data.forEach(item => {
       if (item.uuid === tokenVal.uuid) {
         item.socketId = socket.id;
         item.online = 1;
         item.device = socket.handshake.headers['user-agent'];
         item.loginTime = new Date().toLocaleString('zh-CN', {
-          timeZone: 'Asia/Shanghai',
+          timeZone: 'Asia/Shanghai'
         });
         item.ip = socket.handshake.address;
       }
@@ -58,12 +58,12 @@ export default function refresh(socket, allDB) {
       uuid: user.uuid,
       name: user.name,
       avatar: user.avatar,
-      email: user.email,
+      email: user.email
     });
     // 记录大厅日志
     logDB.data.push(
       `${user.uuid} 重新连接 ${new Date().toLocaleString('zh-CN', {
-        timeZone: 'Asia/Shanghai',
+        timeZone: 'Asia/Shanghai'
       })}`
     );
     logDB.write();
@@ -80,9 +80,9 @@ export default function refresh(socket, allDB) {
       type: 'success',
       data: {
         user,
-        token: newToken,
+        token: newToken
       },
-      message: '刷新成功',
+      message: '刷新成功'
     });
   });
 }

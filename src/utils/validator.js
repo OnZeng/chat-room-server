@@ -58,7 +58,7 @@ export function isToken(str, msg, callback) {
   const tokenRegex = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
   if (!tokenRegex.test(str)) {
     return callback({
-      code: -10,
+      code: 0,
       type: 'error',
       data: {},
       message: msg || 'token格式错误'
