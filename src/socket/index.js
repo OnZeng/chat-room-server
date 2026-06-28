@@ -17,7 +17,7 @@ export function bootstrap(io, allDB) {
     logout(socket, allDB, io);
     register(socket, allDB);
     accInit(socket, allDB, io);
-    refresh(socket, allDB);
+    refresh(socket, allDB, io);
     sendMsg(socket, allDB, io);
     disconnect(socket, allDB, io);
 
